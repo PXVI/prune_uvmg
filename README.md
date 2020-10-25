@@ -1,2 +1,2 @@
 # uvmg_alpha
-Automated UVM Test Environment generation tool ( terminal &amp; gui supported )
+Automated custom configurable UVM Test Environment generation tool ( terminal &amp; gui supported )
