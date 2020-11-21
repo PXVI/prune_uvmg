@@ -3,6 +3,7 @@ Automated custom configurable UVM Test Environment generation tool ( terminal &a
 
 ### Updates
 
+#### Perl Script ( Used for the tb generation )
 <br />
 
   - The basic perl script has been added
@@ -16,3 +17,11 @@ Automated custom configurable UVM Test Environment generation tool ( terminal &a
   - **Pending :** Testbench top file generation
   - **Pending :** TLM1 ports implementation and connections generation
   - **Pending :** Comments updation implementation
+
+<br />
+
+#### Python GUI Filre : Prune ( Used to architect the testbench using a GUI )
+<br />
+
+  - Basic GUI frame added
+  - Basic GUI directory and the main python file uploaded
