@@ -2,6 +2,10 @@
     The main file of the prune app.
 '''
 
+# File Imports
+from classes_def import *
+
+# GUI Imports
 import tkinter as tk
 from tkinter import ttk
 
@@ -31,7 +35,7 @@ curFrame = frame0
 labf0 = tk.Label(frame0, text="Main Menu", padx=200, pady=10, bg="white")
 btf0tof1 = tk.Button(frame0, text="Create TB", width=100, padx=0, pady=2, bg="white", command=lambda: change_frame(frame1))
 btf0tofA = tk.Button(frame0, text="Options", width=100, padx=0, pady=2, bg="white") # TODO
-btf0tofB = tk.Button(frame0, text="Exit", width=100, padx=0, pady=2, bg="white") # TODO
+btf0tofExit = tk.Button(frame0, text="Exit", width=100, padx=0, pady=2, bg="white", command=lambda: close_gui(root))
 
 # Frame1 ( Create TB )
 labf1 = tk.Label(frame1, text="Create TB", padx=200, pady=10, bg="white")
@@ -48,7 +52,7 @@ labf2 = tk.Label(frame2, text="Generic Testbench Details", padx=200, pady=10, bg
 labf0.pack()
 btf0tof1.pack()
 btf0tofA.pack()
-btf0tofB.pack()
+btf0tofExit.pack()
 
 labf1.pack()
 btf1tofX.pack()
@@ -58,6 +62,8 @@ btf1tof0.pack()
 
 labf2.pack()
 
+def close_gui(root):
+    root.destroy()
 
 def change_frame(Frame):
     # Clearing the root window first
@@ -69,6 +75,14 @@ def change_frame(Frame):
 
 # Base Frame
 frame0.pack(fill="both", expand=True)
+
+
+
+obj_00 = pobj()
+obj_00.obj_name = "common"
+obj_00.obj_type = "dir"
+
+obj_00.print_det()
 
 root.grid_columnconfigure(0, weight=1)
 root.mainloop()
