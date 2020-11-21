@@ -41,6 +41,7 @@ class pobj:
         self.obj_parent = self
         # Points to the absolute root
         self.obj_root = self
+        self.last_created_child = self
         # Points to itself
         self.obj_list = []
         #self.node_count = 0
@@ -51,6 +52,7 @@ class pobj:
 
     def create_child(self, obj_name, obj_type):
         x = pobj(obj_name, obj_type)
+        self.last_created_child = x
         x.create_child4(obj_name, obj_type, self.obj_depth+1, self, self.obj_root, self.local_node)
         if( ( len( self.local_node ) - 1 ) < x.obj_depth ):
             # First node of the new depth
@@ -112,6 +114,16 @@ class pobj:
         else:
             print( "[E] No lower nodes have been created. Try again" )
             return self
+    
+    # Move one depth layer down into the child node that was most recently created
+    # - Done -
+    def tree_depth_down_last_created(self):
+        if( len( self.obj_list ) ):
+            print( "---------------------------------------------- Dive" )
+            return self.obj_list[len(self.obj_list)-1]
+        else:
+            print( "[E] No lower nodes have been created. Try again" )
+            return self
 
     # Go to the next node in the current depth
     # - Done -
@@ -145,6 +157,7 @@ class pobj:
     # - Done -
     def tree_depth_up(self):
         if( self == self.obj_parent ):
+            print( "Self : " + self.obj_name + " : " + self.obj_parent.obj_name )
             print( "[E] Already at the highest possible node." )
             return self
         else:
@@ -160,67 +173,125 @@ class pobj:
 
     # Search obj_type TODO
 
+    # Generic Method
+    def gen_arc_tree(self, root, str_list):
+        print( str_list )
+    
+        print( "Root : " + root.obj_name + " : " + str(root.obj_depth) )
+    
+        if( len(str_list) == 3 and str_list[0] == "begin" ):
+            root.create_child( str_list[1], str_list[2] )
+            root = root.tree_depth_down_last_created()
+            print( "Root : " + root.obj_name + " : " + str(root.obj_depth) )
+        elif( len(str_list) == 1 and str_list[0] == "end" ):
+            root = root.tree_depth_up()
+        else:
+            print( "[E] <keylen> Syntax error in the arc format file" )
+
 # ----------------------------------------------
 # --------------- Testing ----------------------
 # ----------------------------------------------
 
-parent = pobj( "parent", "dir" )
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent.create_child( "ch0", "dir" )
-parent.create_child( "ch1", "dir" )
-parent = parent.tree_depth_down()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent.create_child( "ch2", "dir" )
-parent.create_child( "ch3", "dir" )
-parent = parent.tree_depth_down()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.tree_depth_down()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.tree_depth_down()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.tree_depth_down()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.tree_depth_down()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent.create_child( "ch4", "dir" )
-parent.create_child( "ch5", "dir" )
-parent.create_child( "ch6", "dir" )
-parent = parent.tree_depth_down()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent.create_child( "ch7", "dir" )
-parent.create_child( "ch8", "dir" )
-parent.create_child( "ch9", "svfile" )
-parent = parent.tree_depth_up()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.next_node()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.next_node()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.next_node()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent.create_child( "ch14", "dir" )
-parent.create_child( "ch15", "dir" )
-parent = parent.prev_node()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.prev_node()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.prev_node()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.prev_node()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent.create_child( "ch10", "svfile" )
-parent.create_child( "ch11", "svfile" )
-parent.create_child( "ch12", "svfile" )
-parent = parent.tree_depth_up()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.tree_depth_up()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.tree_depth_up()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.tree_depth_up()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent = parent.tree_depth_up()
-print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
-parent.create_child( "ch13", "svfile" )
-print( "-----------------------" )
-parent.print_tree()
+#parent = pobj( "parent", "dir" )
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent.create_child( "ch0", "dir" )
+#parent.create_child( "ch1", "dir" )
+#parent = parent.tree_depth_down()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent.create_child( "ch2", "dir" )
+#parent.create_child( "ch3", "dir" )
+#parent = parent.tree_depth_down()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.tree_depth_down()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.tree_depth_down()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.tree_depth_down()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.tree_depth_down()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent.create_child( "ch4", "dir" )
+#parent.create_child( "ch5", "dir" )
+#parent.create_child( "ch6", "dir" )
+#parent = parent.tree_depth_down()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent.create_child( "ch7", "dir" )
+#parent.create_child( "ch8", "dir" )
+#parent.create_child( "ch9", "svfile" )
+#parent = parent.tree_depth_up()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.next_node()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.next_node()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.next_node()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent.create_child( "ch14", "dir" )
+#parent.create_child( "ch15", "dir" )
+#parent = parent.prev_node()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.prev_node()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.prev_node()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.prev_node()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent.create_child( "ch10", "svfile" )
+#parent.create_child( "ch11", "svfile" )
+#parent.create_child( "ch12", "svfile" )
+#parent = parent.tree_depth_up()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.tree_depth_up()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.tree_depth_up()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.tree_depth_up()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent = parent.tree_depth_up()
+#print( "============== " + str( parent.obj_depth ) + " : " + parent.obj_name + " =============" )
+#parent.create_child( "ch13", "svfile" )
+#print( "-----------------------" )
+#parent.print_tree()
+
+# ----------------------------------------------------------------------
+# Experimental Code To Generate A Architecture Tree From The Format File
+# ----------------------------------------------------------------------
+
+# Generic funtion to be called in order to build the architecture file
+def gen_arc_tree(root, str_list):
+    print( str_list )
+
+    print( "Root : " + root.obj_name + " : " + str(root.obj_depth) )
+
+    if( len(str_list) == 3 and str_list[0] == "begin" ):
+        root.create_child( str_list[1], str_list[2] )
+        root = root.tree_depth_down_last_created()
+    elif( len(str_list) == 1 and str_list[0] == "end" ):
+        root = root.tree_depth_up()
+    else:
+        print( "[E] <keylen> Syntax error in the arc format file" )
+    return root
+
+# Open a file and load the lines in a list
+def open_file_r(fname):
+    f = open( fname, "r" )
+
+'''
+root = pobj( "top", "dir" )
+
+
+f = open( "tb_layout_v2.fmt", "r" )
+
+for x in f:
+    #print(f.readline().rstrip('\n').replace(" ",""))
+    str_list = x.rstrip('\n').replace(" ","").split(sep=':')
+    print( str_list )
+    #print( x.rstrip('\n').replace(" ","").splt(sep=':') )
+    root = gen_arc_tree(root, str_list)
+
+f.close()
+
+print( "----------------------------------------------------------------------" )
+
+root.print_tree()
+'''
