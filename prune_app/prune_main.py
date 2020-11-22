@@ -3,14 +3,13 @@
 '''
 
 # File Imports
+from global_vars import *
 from classes_def import *
+from tree_view_def import *
 
 # GUI Imports
 import tkinter as tk
 from tkinter import ttk
-
-win_width=500
-win_height=500
 
 root = tk.Tk()
 root.title("Prune v0.1")
@@ -41,7 +40,7 @@ btf0tofExit = tk.Button(frame0, text="Exit", width=100, padx=0, pady=2, bg="whit
 labf1 = tk.Label(frame1, text="Create TB", padx=200, pady=10, bg="white")
 btf1tofX = tk.Button(frame1, text="Custom Testbench", width=100, padx=40, pady=2, bg="white") # TODO
 btf1tofY = tk.Button(frame1, text="Testbench From Template", width=100, padx=40, pady=2, bg="white") # TODO
-btf1tof2 = tk.Button(frame1, text="Generic Testbench", width=100, padx=40, pady=2, bg="white", command=lambda: change_frame(frame2))
+btf1tof2 = tk.Button(frame1, text="Generic Testbench", width=100, padx=40, pady=2, bg="white", command=lambda: change_frame_and_gen_tree(frame2))
 btf1tof0 = tk.Button(frame1, text="Back", padx=5, pady=2, bg="white", command=lambda: change_frame(frame0))
 
 # Frame2 ( Create TB )
@@ -73,16 +72,20 @@ def change_frame(Frame):
     curFrame = Frame
     Frame.pack(fill="both", expand=True)
 
+def change_frame_and_gen_tree(Frame):
+    change_frame(Frame)
+    generic_tb_populate_treeview(Frame)
+
 # Base Frame
 frame0.pack(fill="both", expand=True)
 
 
 
-obj_00 = pobj()
-obj_00.obj_name = "common"
-obj_00.obj_type = "dir"
-
-obj_00.print_det()
+#obj_00 = pobj()
+#obj_00.obj_name = "common"
+#obj_00.obj_type = "dir"
+#
+#obj_00.print_det()
 
 root.grid_columnconfigure(0, weight=1)
 root.mainloop()

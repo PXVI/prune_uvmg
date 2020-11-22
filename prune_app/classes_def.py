@@ -2,6 +2,8 @@
     The file which contains all the class definitions for use in the app
 '''
 
+from global_vars import *
+
 # Basic prune class object definition
 class pobj:
     #obj_name = ""
@@ -9,6 +11,18 @@ class pobj:
     #obj_depth = 0
     #obj_parent = ""
     
+    # General Count Local Variable
+    count = 0
+
+    # Unique Node Id Vaulue
+    #node_id
+    master_node = [ '' ]
+
+    # Component/Arc Files Lists & Counts ( Using Dictionary )
+    comp_file_list = []
+    comp_file_name_dict = {}
+    comp_file_count_dict = {}
+
     # Depth wise traversal node accounting
     local_node = [ 0 ]
 
@@ -23,6 +37,7 @@ class pobj:
         self.obj_list = []
         self.obj_root = obj_root
         self.local_node = local_node
+        self.count = 0
         #self.node_count = 0
 
     #def create_child3(self, obj_name, obj_type, obj_depth):
@@ -42,10 +57,20 @@ class pobj:
         # Points to the absolute root
         self.obj_root = self
         self.last_created_child = self
+        self.count = 0
+        self.node_id = 0
+        if( self.master_node[0] == '' ):
+            # Do nothing
+            self.master_node[0] = 0
+            self.node_id = -1;
+        else:
+            self.master_node[0] += 1
+            self.node_id = self.master_node[0]
         # Points to itself
         self.obj_list = []
         #self.node_count = 0
         self.local_node = [ 0 ]
+        self.update_dict_and_list()
 
     def print_det(self):
         print( self.obj_depth + " - " + self.obj_name + " : " + self.obj_type )
@@ -70,10 +95,47 @@ class pobj:
         self.obj_list.append( x )
         print( "Node Created : " + str(x.obj_depth) + " : " + x.obj_name + " : (p) " + x.obj_parent.obj_name + " : " + x.obj_type + " : " + str(len(self.obj_list)) + " : " + str(len(x.obj_list)) + " : " + str(len(self.local_node)) )
 
+    # Update the dictionary & list
+    def update_dict_and_list(self):
+        if( len(self.comp_file_list) == 0 ):
+            self.comp_file_list.append( self.obj_type )
+            self.comp_file_name_dict[self.comp_file_list[0]] = []
+            self.comp_file_name_dict[self.comp_file_list[0]].append( self.obj_name)
+            self.comp_file_count_dict[self.comp_file_list[0]] = 1
+        else:
+            exists = 0
+            m = 0
+            while( m < len(self.comp_file_list )):
+                if( self.comp_file_list[m] == self.obj_type ):
+                    exists = 1
+                    self.comp_file_name_dict[self.comp_file_list[m]].append(self.obj_name)
+                    self.comp_file_count_dict[self.comp_file_list[m]] += 1
+
+                m += 1
+
+            if( exists == 0 ):
+                self.comp_file_list.append( self.obj_type )   
+                self.comp_file_name_dict[self.comp_file_list[len(self.comp_file_list)-1]] = []
+                self.comp_file_name_dict[self.comp_file_list[len(self.comp_file_list)-1]].append(self.obj_name)
+                self.comp_file_count_dict[self.comp_file_list[len(self.comp_file_list)-1]] = 1
+
+    # Print the architecture details in a readable format
+    def print_arc_readable(self):
+        if( len(self.comp_file_list) != 0 ):
+            n = 0
+            while( n < len(self.comp_file_list) ):
+                print( self.comp_file_list[n] + " : " + str(self.comp_file_count_dict[self.comp_file_list[n]]) )
+                #print( self.comp_file_name_dict[self.comp_file_list[n]] )
+                for k in self.comp_file_name_dict[self.comp_file_list[n]]:
+                    print( "    " + k )
+                n += 1
+        else:
+            print( "[E] Nothing to print" )
+
     # Print the tree from the current node
     def print_cur_tree(self):
         # Depth first search and printing will be performed
-        print( "Start Tree Node : " + str(self.obj_depth) + " : " + self.obj_name + " : " + self.obj_type )
+        print( "Start Tree Node : " + str(self.obj_depth) + " : " + self.obj_name + " : " + self.obj_type + " : Node_ID ( " + str(self.node_id) + " ) : Parent Node_ID ( " + str(self.obj_parent.node_id) + " )" )
         if( len(self.obj_list) != 0 ):
             for obj in self.obj_list:
                 #print( "Tree Node : " + str(obj.obj_depth) + " : " +obj.obj_name + " : " + obj.obj_type + " : " + str(len(obj.obj_list)) )
@@ -82,7 +144,7 @@ class pobj:
     # Print the tree from the absolute root node
     def print_tree(self):
         # Depth first search and printing will be performed
-        print( "Root Tree Node : " + str(self.obj_root.obj_depth) + " : " + self.obj_root.obj_name + " : " + self.obj_root.obj_type )
+        print( "Root Tree Node : " + str(self.obj_root.obj_depth) + " : " + self.obj_root.obj_name + " : " + self.obj_root.obj_type + " : Node_ID ( " + str(self.node_id) + " ) : Parent Node_ID ( " + str(self.obj_parent.node_id) + " )" )
         if( len(self.obj_root.obj_list) != 0 ):
             for obj in self.obj_root.obj_list:
                 #print( "Tree Node : " + str(obj.obj_depth) + " : " +obj.obj_name + " : " + obj.obj_type + " : " + str(len(obj.obj_list)) )
@@ -188,6 +250,68 @@ class pobj:
         else:
             print( "[E] <keylen> Syntax error in the arc format file" )
 
+    # Search type & return count staring the earch from root
+    def search_type_return_count_from_root(self, typ_name, initial_count):
+
+        if( len(self.obj_root.obj_list) != 0 ):
+            for obj in self.obj_root.obj_list:
+                if( obj.obj_type == typ_name ):
+                    initial_count += 1
+                initial_count = obj.search_type_return_count(typ_name, initial_count)
+        return initial_count
+    
+    # Search type & return count staring the earch from current node
+    def search_type_return_count(self, typ_name, initial_count):
+
+        if( len(self.obj_list) != 0 ):
+            for obj in self.obj_list:
+                if( obj.obj_type == typ_name ):
+                    initial_count += 1
+                initial_count = obj.search_type_return_count(typ_name, initial_count)
+        return initial_count
+
+    # Generate Treeview for the frame
+    def generate_treeview(self, obj, my_tree):
+        # Define our columns
+        #my_tree['columns'] = ("Name", "Type") # Main columns + phantom column | Will only use the phantom column
+        
+        # Format for columns
+        my_tree.column("#0", width=win_width, minwidth=int(win_width/2))
+        #my_tree.column("Name", anchor="w", width=120, minwidth=25)
+        #my_tree.column("Type", anchor="center", width=120, minwidth=25)
+        
+        # Create heading
+        my_tree.heading("#0", text="Testbench File Layout", anchor="center")
+        #my_tree.heading("Name", text="F/C Name", anchor="w")
+        #my_tree.heading("Type", text="F/C Type", anchor="center")
+
+        # Add Data # Alternative Suggestion - Just use the test field for the primary data holder. In our case, the name of the person
+        #my_tree.insert(parent='', index='end', iid=0, text="tb_name")
+        self.treeview_insert(my_tree)
+
+    # Insert Data Fields From Root Node
+    def treeview_insert(self, my_tree):
+        if( len(self.obj_root.obj_list) ):
+            if( self.obj_parent.node_id == -1 ):
+                my_tree.insert(parent='', index='end', iid=self.node_id, text=str(self.obj_name + "(" +self.obj_type + ")"))
+            else:
+                my_tree.insert(parent=self.obj_parent.node_id, index='end', iid=self.node_id, text=str(self.obj_name + "(" +self.obj_type + ")"))
+            
+            if( len(self.obj_root.obj_list) != 0 ):
+                for obj in self.obj_list:
+                    obj.treeview_insert_from_cur(my_tree)
+        else:
+            print( "[E] The arc file is empty. Layout cannot be loaded." )
+
+    # Insert Data Fields From Current Node
+    def treeview_insert_from_cur(self, my_tree):
+        my_tree.insert(parent=self.obj_parent.node_id, index='end', iid=self.node_id, text=str(self.obj_name + "(" +self.obj_type + ")"))
+        
+        if( len(self.obj_list) != 0 ):
+            for obj in self.obj_list:
+                obj.treeview_insert(my_tree)
+        
+
 # ----------------------------------------------
 # --------------- Testing ----------------------
 # ----------------------------------------------
@@ -275,6 +399,11 @@ def gen_arc_tree(root, str_list):
 # Open a file and load the lines in a list
 def open_file_r(fname):
     f = open( fname, "r" )
+    return fname
+
+# Close an open file
+def close_file(f):
+    f.close()
 
 '''
 root = pobj( "top", "dir" )
@@ -294,4 +423,6 @@ f.close()
 print( "----------------------------------------------------------------------" )
 
 root.print_tree()
+print( "----------------------------------------------------------------------" )
+root.print_arc_readable()
 '''
