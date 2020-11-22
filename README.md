@@ -25,3 +25,5 @@ Automated custom configurable UVM Test Environment generation tool ( terminal &a
 
   - Basic GUI frame added
   - Basic GUI directory and the main python file uploaded
+  - The Treeview file/architecture structure has been added.
+  - Generic testbench layout is loaded from an external file which will be set to read only
